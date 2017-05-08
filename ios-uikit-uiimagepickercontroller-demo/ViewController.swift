@@ -13,7 +13,7 @@ final class ViewController: UIViewController {
     @IBOutlet fileprivate weak var imageView: UIImageView!
     
     @IBAction private func didTapButton(_ sender: UIButton) {
-        guard let imagePicker = setupImagePicker() else { return }
+        guard let imagePicker = setCameraImagePicker() else { return }
         present(imagePicker, animated: true, completion: nil)
     }
 }
@@ -42,6 +42,34 @@ extension ViewController: UIImagePickerControllerDelegate, UINavigationControlle
          上記設定をしないとクラッシュする
          */
         imagePicker.sourceType = .photoLibrary
+        
+        // 画像取得後の編集を許可する
+        imagePicker.allowsEditing = true
+        
+        return imagePicker
+    }
+    
+    fileprivate func setCameraImagePicker() -> UIImagePickerController? {
+        
+        // シミュレータでは動かない
+        guard UIImagePickerController.isSourceTypeAvailable(.camera) else {
+            print("この端末はcameraが使えません")
+            return nil
+        }
+        
+        let imagePicker = UIImagePickerController()
+        // UINavigationControllerDelegateにも準拠している必要あり
+        imagePicker.delegate = self
+        
+        // 画像取得先を選択する
+        /*
+         ※注意
+         iOS10以降、写真にアクセスする際はinfo.plistにPrivacy - Camera Usage Descriptionを設定し、
+         カメラにアクセスする旨の文言をセットする
+         　↓
+         上記設定をしないとクラッシュする
+         */
+        imagePicker.sourceType = .camera
         
         // 画像取得後の編集を許可する
         imagePicker.allowsEditing = true
